@@ -1,81 +1,20 @@
-# Bidet Phone — local-Gemma Bidet AI for Pixel 8 Pro
+# Bidet Phone: historical Android planning notes
 
-This repo is the work-track for taking Bidet AI fully on-device on Mark Barnett's
-Pixel 8 Pro using **Gemma 4 E4B + Google AI Edge SDK + LiteRT-LM**, with the
-existing Bidet cleanup pipeline (RAW / CLEAN / ANALYSIS / FORAI tabs) bolted on.
+This repository preserves an early plan for an Android voice-capture and transcript-cleanup app. It is not a working app release or a current implementation brief.
 
-**Status:** plan stage. No code yet. See [BIDET_PLAN.md](./BIDET_PLAN.md) for the
-research + decisions Claude already locked in.
+**For implementation code, start with [Bidet AI](https://github.com/MrB-Ed/bidet-ai).** That public repository is a curated code extract, not a complete installable application.
 
----
+Separately, [Bidet AI Voice for Android](https://github.com/MrB-Ed/bidet-ai-voice-android-release) documents a signed Android tester preview with cloud-provider options. That release lane is distinct from the curated on-device Gemma extract. Its release and device-test claims are project-reported; this documentation review did not test the APK or verify the current phone build.
 
-## TL;DR for an AI builder reading this
+## What the early plan explored
 
-You are being handed this README with a prompt like *"build me an Android app that
-does X."* Read this whole README + BIDET_PLAN.md, then proceed.
+- Capturing speech and processing transcripts on an Android phone.
+- Separating raw text, cleaned text, analysis, and text prepared for other tools.
+- Comparing a reference-app fork with a purpose-built interface.
+- An optional explicit export path to a separate personal system.
 
-### What to build
-A **fork** of Google's open-source [`google-ai-edge/gallery`](https://github.com/google-ai-edge/gallery)
-app, morphed into a focused capture tool with these tabs (instead of Gallery's
-generic chat):
+The original plan considered model, runtime, and hardware choices explored at that time. Its claims and estimates are historical research notes, not current compatibility, performance, or privacy guarantees. See [BIDET_PLAN.md](BIDET_PLAN.md) for the planning context.
 
-1. **RAW** — Audio Scribe (real-time on-device transcription) + raw text capture.
-2. **CLEAN** — Same transcript, cleaned: typos fixed, hesitations removed,
-   sentences merged. Done by Gemma 4 E4B locally.
-3. **ANALYSIS** — Optional: Gemma 4 generates a short bullet summary + flags any
-   action items.
-4. **FORAI** — Same content, prepared for ingest by another AI: stripped of
-   tangents, structured headings, key-value pairs where useful.
+## License and attribution
 
-### Constraints (non-negotiable)
-- **All inference local.** No cloud Gemini API calls. Use `AICore` + Gemma 4 E4B
-  via the AI Edge SDK / LiteRT-LM. Pixel 8 Pro NPU/GPU only.
-- **No analytics. No telemetry.** Bidet captures Mark's classroom voice — never
-  ships off device unless explicitly sent to the configured webhook.
-- **Apex-master architecture.** Phone is a capture client, not the canonical
-  store. After cleanup, payload POSTs to `https://ag.thebarnetts.info/ingest/bidet`
-  with header `X-AG-KEY: <secret>`. (Endpoint to be added to TP3 stack — not
-  blocking the build, the app can hold local until endpoint exists.)
-- **MIT license.** Sideload via Obtainium — don't publish to Play Store.
-
-### Reference apps to read first
-- `google-ai-edge/gallery` — fork target. Has Audio Scribe + Gemma 4 E4B already.
-- `RafhaanShah/TaskerHealthConnect` — clean Kotlin patterns for Android sensors.
-- Bidet AI desktop (live at https://bidetai.thebarnetts.info) — UX reference for
-  the four output tabs.
-
-### Wire format for `/ingest/bidet` (planned)
-```json
-{
-  "timestamp": "<ISO8601 UTC>",
-  "device": "Pixel 8 Pro",
-  "source": "bidet_phone",
-  "session_id": "<uuid>",
-  "raw": "<full transcript>",
-  "clean": "<cleaned transcript>",
-  "analysis": "<bullet summary + action items>",
-  "forai": "<structured for downstream AI>"
-}
-```
-
-### What's NOT in scope for v0.1
-- Multi-user / login. Single-user app, Mark only.
-- Cloud sync between phone instances.
-- Background continuous capture. v0.1 = button-press to start session.
-- iOS port.
-
----
-
-## Pointers
-- The full plan + decisions: [BIDET_PLAN.md](./BIDET_PLAN.md)
-- TP3 stack architecture (the Apex-master end of the pipeline):
-  https://github.com/MrB-Ed/tp3-neural-stack
-- Cursor's parallel build for the Health Connect bridge (similar architecture):
-  https://github.com/MrB-Ed/tp3-health-bridge
-- Bidet AI desktop (current product): https://bidetai.thebarnetts.info
-
----
-
-## License
-
-MIT. See [LICENSE](./LICENSE).
+This repository contains an [MIT LICENSE](LICENSE) for its material. Referenced projects and models retain their own licenses and terms; the MIT file does not relicense upstream code or model weights. The implementation showcase above documents its separate license and attribution.
